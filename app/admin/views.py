@@ -2,9 +2,9 @@ from flask import abort, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
 
 from . import admin
-from app.admin.forms import DepartmentForm, RoleForm, EmployeeAssignForm
+from app.admin.forms import DepartmentForm, RoleForm, EmployeeAssignForm, StallsForm, MenuForm
 from .. import db
-from ..models import Department, Role, Employee
+from ..models import Department, Role, Employee, Stalls, MenuItems, Location
 
 def check_admin():
     """
@@ -235,3 +235,52 @@ def assign_employee(id):
     return render_template('admin/employees/employee.html',
                            employee=employee, form=form,
                            title='Assign Employee')
+
+# Stalls Views
+
+@admin.route('/stalls', methods=['GET', 'POST'])
+@login_required
+def list_stalls():
+    """
+    List all stalls
+    """
+    check_admin()
+
+    stalls = Stalls.query.all()
+
+    return render_template('admin/stalls/stalls.html',
+                           stalls=stalls, title="Stalls")
+
+@admin.route('/stalls/add', methods = ['GET', 'POST'])
+@login_required
+def add_stall():
+
+    check_admin()
+
+    form = StallsForm()
+    print('Location Id: ',form.location.data)
+    if form.validate_on_submit():
+        stall = Stalls(name=form.name.data,
+                        description=form.description.data,
+                        ownername = form.ownername.data,
+                        contact_number = form.contact_number.data,
+                        mobile_number = form.mobile_number.data,
+                        address = form.address.data,
+                        notes = form.notes.data,
+                        location_id = form.location.data)
+        try:
+            # add stall to the database
+            db.session.add(stall)
+            db.session.commit()
+            flash('You have successfully added a new stall.')
+        except:
+            # in case of any issues
+            flash('Error: not able to add stall due to technical error.')
+
+        # redirect to stalls page
+        return redirect(url_for('admin.list_stalls'))
+
+    # load stall template
+    return render_template('admin/stalls/stall.html', action="Add",
+                           add_stall=add_stall, form=form,
+                           title="Add Stall")

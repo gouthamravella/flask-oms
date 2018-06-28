@@ -105,7 +105,7 @@ class Location(db.Model):
 
 class MenuItems(db.Model):
     """
-    create a Location table
+    create a MenuItems table
     """
 
     __tablename__ = 'menuitems'
@@ -122,7 +122,7 @@ class MenuItems(db.Model):
 
 class Stalls(db.Model):
     """
-    create a Location table
+    create a Stalls table
     """
 
     __tablename__ = 'stalls'
@@ -137,12 +137,15 @@ class Stalls(db.Model):
     notes = db.Column(db.String(255))
     location_id = db.Column(db.Integer, db.ForeignKey('locations.id'))
 
+    menuitems = db.relationship('MenuItems', backref = 'menu_list',
+                                 lazy = 'dynamic')
+
     def __repr__(self):
         return '<Stalls: {}'.format(self.name)
 
 class Orders(db.Model):
     """
-    create a Location table
+    create a Orders table
     """
 
     __tablename__ = 'orders'
@@ -166,7 +169,7 @@ class Orders(db.Model):
 
 class OrdersList(db.Model):
     """
-    create a Location table
+    create a OrdersList table
     """
 
     __tablename__ = 'orderslist'
@@ -187,7 +190,7 @@ class OrdersList(db.Model):
 
 class Customers(db.Model):
     """
-    create a Location table
+    create a Customers table
     """
 
     __tablename__ = 'customers'
@@ -204,7 +207,7 @@ class Customers(db.Model):
 
 class Status(db.Model):
     """
-    create a Location table
+    create a Status table
     """
 
     __tablename__ = 'status'
